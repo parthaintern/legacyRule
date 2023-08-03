@@ -77,7 +77,7 @@ public class LegacyServiceTest {
 
         String expectedResult5 = """
                 MATCH FOUND with CONTENT
-                lr_id: -> 1002
+                lr_id: -> 1003
                 LegacyRule content received:\t super spam yes
                 Database LegacyRule content:\t %spam%
                 Replaced Content Value:\t\t .*spam.*""";
@@ -92,7 +92,7 @@ public class LegacyServiceTest {
 
                 Arguments.of(createLegacyReq(1999999999999L, "1001", 3, 34999999L, "9876a90", "911234500002", 0, null, "919535201758", "996473847383", "oooo", "0", "10400234556784", "0", "ca34283bbcd3432489cadf2834", "911234500002", "23-05-02 20:17:23", "43"), expectedResult4),
 
-                Arguments.of(createLegacyReq(1999999999999L, "1001", 3, 34999999L, "99999999", "911234500002", 0, null, "919535201758", "996473847383", "spam", "0", "10400234556784", "0", "ca34283bbcd3432489cadf2834", "911234500002", "23-05-02 20:17:23", "43"), expectedResult5)
+                Arguments.of(createLegacyReq(1999999999999L, "1001", 3, 34999999L, "99999999", "911234500002", 0, null, "919535201758", "996473847383", "super spam yes", "0", "10400234556784", "0", "ca34283bbcd3432489cadf2834", "911234500002", "23-05-02 20:17:23", "43"), expectedResult5)
         );
     }
 
@@ -105,7 +105,7 @@ public class LegacyServiceTest {
 
         legacy_rules1.setLrId(1000);
         legacy_rules1.setLrName("Rule999");
-        legacy_rules1.setLrCallingGt("9876[a]__");
+        legacy_rules1.setLrCallingGt("%22%");
         legacy_rules1.setLrMapGt("9479000023");
         legacy_rules1.setLrAlphaBlocked(0);
         legacy_rules1.setLrOa("%");
@@ -151,13 +151,13 @@ public class LegacyServiceTest {
 
         legacy_rules legacy_rules3 = new legacy_rules();
         legacy_rules3.setLrId(1002);
-        legacy_rules3.setLrCallingGt("9876[a-b]__");
+        legacy_rules3.setLrCallingGt("9876[a]__");
         legacy_rules3.setLrContent("test content");
 
         legacy_rules legacy_rules4 = new legacy_rules();
         legacy_rules3.setLrId(1003);
         legacy_rules3.setLrCallingGt("%");
-        legacy_rules3.setLrContent("super spam yes");
+        legacy_rules3.setLrContent("%spam%");
 
         mockData.add(legacy_rules1);
         mockData.add(legacy_rules2);
