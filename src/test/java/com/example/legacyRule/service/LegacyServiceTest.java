@@ -7,6 +7,7 @@ import com.example.legacyRule.request.LegacyReq;
 import com.example.legacyRule.request.LegacyReqParameters;
 import com.example.legacyRule.entity.legacy_rules;
 import com.example.legacyRule.repository.LegacyRepository;
+import org.aspectj.weaver.ast.Call;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -55,15 +56,17 @@ public class LegacyServiceTest {
                 Replaced Content Value:\t\t .*22.*""";
 
         String expectedResult2 = """
-                MATCH NOT FOUND!
-                calling_gt received: 87485
-                content received: mmmm""";
+                MATCH FOUND with CALLING_GT
+                lr_id: -> 1001
+                LegacyRule calling_gt received:\t 874723434
+                Database LegacyRule calling_gt:\t %234%
+                Replaced Content Value:\t\t .*234.*""";
 
         return Stream.of(
 
-                Arguments.of(createLegacyReq1(), expectedResult1),
+                Arguments.of(createLegacyReq(1999999999999L, "1001", 3, 34999999L, "122222345", "911234500002", 0, null, "919535201758", "996473847383", "test content", "0", "10400234556784", "0", "ca34283bbcd3432489cadf2834", "911234500002", "23-05-02 20:17:23", "43"), expectedResult1),
 
-                Arguments.of(createLegacyReq2(), expectedResult2)
+                Arguments.of(createLegacyReq(1999999999999L, "1001", 3, 34999999L, "874723434", "911234500002", 0, null, "919535201758", "996473847383", "mmmm", "0", "10400234556784", "0", "ca34283bbcd3432489cadf2834", "911234500002", "23-05-02 20:17:23", "43"), expectedResult2)
         );
     }
 
@@ -124,6 +127,35 @@ public class LegacyServiceTest {
         mockData.add(legacy_rules2);
 
         return mockData;
+    }
+
+    private static LegacyReq createLegacyReq(Long TimeStamp, String ServerKey, Integer MessageType, Long Reference, String CallingGt, String CalledGt, Integer ResponseCode, String Cause, String aNumber, String bNumber, String content, String dcs, String imsi, String pid, String rawUserData, String serviceCentreAddress, String serviceCentreTimeStamp, String tpduLength) {
+
+        LegacyReq legacyReq = new LegacyReq();
+        legacyReq.setTimeStamp(TimeStamp);
+        legacyReq.setServerKey(ServerKey);
+        legacyReq.setMessageType(MessageType);
+        legacyReq.setReference(Reference);
+        legacyReq.setCallingGt(CallingGt);
+        legacyReq.setCalledGt(CalledGt);
+        legacyReq.setResponseCode(ResponseCode);
+        legacyReq.setCause(Cause);
+
+        LegacyReqParameters legacyReqParameters = new LegacyReqParameters();
+        legacyReqParameters.setANumber(aNumber);
+        legacyReqParameters.setBNumber(bNumber);
+        legacyReqParameters.setContent(content);
+        legacyReqParameters.setDcs(dcs);
+        legacyReqParameters.setImsi(imsi);
+        legacyReqParameters.setPid(pid);
+        legacyReqParameters.setRawUserData(rawUserData);
+        legacyReqParameters.setServiceCentreAddress(serviceCentreAddress);
+        legacyReqParameters.setServiceCentreTimeStamp(serviceCentreTimeStamp);
+        legacyReqParameters.setTpduLength(tpduLength);
+
+        legacyReq.setLegacyReqParameters(legacyReqParameters);
+
+        return legacyReq;
     }
 
 
