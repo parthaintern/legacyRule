@@ -7,7 +7,6 @@ import com.example.legacyRule.request.LegacyReq;
 import com.example.legacyRule.request.LegacyReqParameters;
 import com.example.legacyRule.entity.legacy_rules;
 import com.example.legacyRule.repository.LegacyRepository;
-import org.aspectj.weaver.ast.Call;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -62,11 +61,38 @@ public class LegacyServiceTest {
                 Database LegacyRule calling_gt:\t %234%
                 Replaced Content Value:\t\t .*234.*""";
 
+        String expectedResult3 = """
+                MATCH FOUND with CONTENT
+                lr_id: -> 1000
+                LegacyRule content received:\t test content
+                Database LegacyRule content:\t test content
+                Replaced Content Value:\t\t test content""";
+
+        String expectedResult4 = """
+                MATCH FOUND with CALLING_GT
+                lr_id: -> 1002
+                LegacyRule calling_gt received:\t 9876a90
+                Database LegacyRule calling_gt:\t 9876[a-b]__
+                Replaced Content Value:\t\t 9876[a-b][0-9A-Za-z][0-9A-Za-z]""";
+
+        String expectedResult5 = """
+                MATCH FOUND with CONTENT
+                lr_id: -> 1002
+                LegacyRule content received:\t super spam yes
+                Database LegacyRule content:\t %spam%
+                Replaced Content Value:\t\t .*spam.*""";
+
         return Stream.of(
 
-                Arguments.of(createLegacyReq(1999999999999L, "1001", 3, 34999999L, "122222345", "911234500002", 0, null, "919535201758", "996473847383", "test content", "0", "10400234556784", "0", "ca34283bbcd3432489cadf2834", "911234500002", "23-05-02 20:17:23", "43"), expectedResult1),
+                Arguments.of(createLegacyReq(1999999999999L, "1001", 3, 34999999L, "122222345", "911234500002", 0, null, "919535201758", "996473847383", "oooo", "0", "10400234556784", "0", "ca34283bbcd3432489cadf2834", "911234500002", "23-05-02 20:17:23", "43"), expectedResult1),
 
-                Arguments.of(createLegacyReq(1999999999999L, "1001", 3, 34999999L, "874723434", "911234500002", 0, null, "919535201758", "996473847383", "mmmm", "0", "10400234556784", "0", "ca34283bbcd3432489cadf2834", "911234500002", "23-05-02 20:17:23", "43"), expectedResult2)
+                Arguments.of(createLegacyReq(1999999999999L, "1001", 3, 34999999L, "874723434", "911234500002", 0, null, "919535201758", "996473847383", "mmmm", "0", "10400234556784", "0", "ca34283bbcd3432489cadf2834", "911234500002", "23-05-02 20:17:23", "43"), expectedResult2),
+
+                Arguments.of(createLegacyReq(1999999999999L, "1001", 3, 34999999L, "1", "911234500002", 0, null, "919535201758", "996473847383", "test content", "0", "10400234556784", "0", "ca34283bbcd3432489cadf2834", "911234500002", "23-05-02 20:17:23", "43"), expectedResult3),
+
+                Arguments.of(createLegacyReq(1999999999999L, "1001", 3, 34999999L, "9876a90", "911234500002", 0, null, "919535201758", "996473847383", "oooo", "0", "10400234556784", "0", "ca34283bbcd3432489cadf2834", "911234500002", "23-05-02 20:17:23", "43"), expectedResult4),
+
+                Arguments.of(createLegacyReq(1999999999999L, "1001", 3, 34999999L, "99999999", "911234500002", 0, null, "919535201758", "996473847383", "spam", "0", "10400234556784", "0", "ca34283bbcd3432489cadf2834", "911234500002", "23-05-02 20:17:23", "43"), expectedResult5)
         );
     }
 
@@ -79,7 +105,7 @@ public class LegacyServiceTest {
 
         legacy_rules1.setLrId(1000);
         legacy_rules1.setLrName("Rule999");
-        legacy_rules1.setLrCallingGt("%22%");
+        legacy_rules1.setLrCallingGt("9876[a]__");
         legacy_rules1.setLrMapGt("9479000023");
         legacy_rules1.setLrAlphaBlocked(0);
         legacy_rules1.setLrOa("%");
@@ -123,8 +149,19 @@ public class LegacyServiceTest {
         legacy_rules2.setLrMsisdn(null);
         legacy_rules2.setLrSystemid(null);
 
+        legacy_rules legacy_rules3 = new legacy_rules();
+        legacy_rules3.setLrId(1002);
+        legacy_rules3.setLrCallingGt("9876[a-b]__");
+        legacy_rules3.setLrContent("test content");
+
+        legacy_rules legacy_rules4 = new legacy_rules();
+        legacy_rules3.setLrId(1003);
+        legacy_rules3.setLrCallingGt("%");
+        legacy_rules3.setLrContent("super spam yes");
+
         mockData.add(legacy_rules1);
         mockData.add(legacy_rules2);
+        mockData.add(legacy_rules3);
 
         return mockData;
     }
@@ -156,66 +193,6 @@ public class LegacyServiceTest {
         legacyReq.setLegacyReqParameters(legacyReqParameters);
 
         return legacyReq;
-    }
-
-
-    private static LegacyReq createLegacyReq1() {
-        LegacyReq legacyReq1 = new LegacyReq();
-
-        legacyReq1.setTimeStamp(1999999999999L);
-        legacyReq1.setServerKey("1001");
-        legacyReq1.setMessageType(3);
-        legacyReq1.setReference(3499352042L);
-        legacyReq1.setCallingGt("122222345");
-        legacyReq1.setCalledGt("911234500002");
-        legacyReq1.setResponseCode(0);
-        legacyReq1.setCause(null);
-
-        LegacyReqParameters legacyReqParameters = new LegacyReqParameters();
-
-        legacyReqParameters.setANumber("919535201758");
-        legacyReqParameters.setBNumber("99645634756");
-        legacyReqParameters.setContent("test content");
-        legacyReqParameters.setDcs("0");
-        legacyReqParameters.setImsi("1040023547528");
-        legacyReqParameters.setPid("0");
-        legacyReqParameters.setRawUserData("c8329bfd062dcb7374d8ce021ddf6f32a8f996bbd3eeb30b840cdbcba030c89d1e9741e4701e");
-        legacyReqParameters.setServiceCentreAddress("911234500001");
-        legacyReqParameters.setServiceCentreTimeStamp("23-05-02 20:17:23");
-        legacyReqParameters.setTpduLength("43");
-
-        legacyReq1.setLegacyReqParameters(legacyReqParameters);
-
-        return legacyReq1;
-    }
-
-    private static LegacyReq createLegacyReq2() {
-        LegacyReq legacyReq2 = new LegacyReq();
-
-        legacyReq2.setTimeStamp(1999999999999L);
-        legacyReq2.setServerKey("1001");
-        legacyReq2.setMessageType(3);
-        legacyReq2.setReference(3499352042L);
-        legacyReq2.setCallingGt("87485");
-        legacyReq2.setCalledGt("911234500002");
-        legacyReq2.setResponseCode(0);
-        legacyReq2.setCause(null);
-
-        LegacyReqParameters legacyReqParameters = new LegacyReqParameters();
-
-        legacyReqParameters.setANumber("919535201758");
-        legacyReqParameters.setBNumber("99645634756");
-        legacyReqParameters.setContent("mmmm");
-        legacyReqParameters.setDcs("0");
-        legacyReqParameters.setImsi("1040023547528");
-        legacyReqParameters.setPid("0");
-        legacyReqParameters.setRawUserData("c8329bfd062dcb7374d8ce021ddf6f32a8f996bbd3eeb30b840cdbcba030c89d1e9741e4701e");
-        legacyReqParameters.setServiceCentreAddress("911234500001");
-        legacyReqParameters.setServiceCentreTimeStamp("23-05-02 20:17:23");
-        legacyReqParameters.setTpduLength("43");
-
-        legacyReq2.setLegacyReqParameters(legacyReqParameters);
-        return legacyReq2;
     }
 
 }
